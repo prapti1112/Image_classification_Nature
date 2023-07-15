@@ -1,9 +1,23 @@
 import logging
+import os
+import tensorflow as tf
 
 class Image_Classification:
     def __init__(self, model_name="vgg19") -> None:
         self.IMAGE_SIZE = 224
         logging.info(f"Starting image classification with {model_name}")
+
+    def load_data(self, data_path):
+        """
+            Function to load a dataset given the path to data
+            @param[in]: data_path(String/PathLike)
+            ---
+            @param[out]: dataset[tf.data.dataset]
+        """
+        logging.info(f"Loading data from: {data_path}")
+        dataset = tf.keras.utils.image_dataset_from_directory(data_path, image_size=(self.IMAGE_SIZE, self.IMAGE_SIZE))
+        dataset = dataset.prefetch(tf.data.AUTOTUNE) # type: ignore
+        return dataset
 
     def train(self, data_path):
         """
@@ -27,7 +41,13 @@ class Image_Classification:
             |           :
         """
         # TODO: Validate the data path entered
-        logging.info(f"Loading data from {data_path}")
+        train_dataset = self.load_data(os.path.join(data_path, "train"))
+        validation_dataset = self.load_data(os.path.join(data_path, "val"))
+
+        # Testing datasets
+        for (image, label) in train_dataset.take(3):
+            print( image.shape, label )
+
 
     def infer(self):
         pass
