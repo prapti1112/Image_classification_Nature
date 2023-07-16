@@ -1,0 +1,28 @@
+Task 1:
+Could you please explain how you would go about building a classification model using the dataset provided in this 
+link: https://storage.googleapis.com/wandb_datasets/nature_12K.zip'? 
+What steps would you take to train and test the model?
+Answer:
+I would use the following steps to build a classification model:
+1. Analyse the dataset
+     (i) Is data balanced or not? The data set used here is balanced
+    (ii) Is data augmentation need? [In this case I have decided to not perform data augmentation]
+2. Build the structure of loading data and other utilities [This includes using tensorflow dataset to preprocess and build dataset for training]
+3. Building the actual model architecture according to the official paper. Here the architectures used are:
+     (i) VGG19
+    (ii) ResNet152
+    From all these architectures the one performing the best is choosen for further tuning
+4. Apply hyperparameter tuning on the model to get best accuracy
+
+
+Task 2:
+Once you have built the initial model, how would you approach tuning its hyperparameters? Could you explain how you would log the hyperparameters and 
+evaluate their impact on improving the model's accuracy?
+
+Task 3:
+In the scenario where the model is not performing well, what steps would you take to conduct a detailed analysis of the failure? How would you go about 
+debugging the neural network to identify potential issues?
+
+Task 4:
+After completing the above tasks, what additional steps would you take to further improve the model's accuracy? Could you outline your proposed approach 
+and explain the reasoning behind it?
