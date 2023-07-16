@@ -1,7 +1,11 @@
+from glob import glob
 import logging
 import os
+import cv2
+import numpy as np
 import tensorflow as tf
 from tensorflow.python.keras.callbacks import ModelCheckpoint
+from tensorflow.python.keras.models import load_model
 
 class Image_Classification:
     def __init__(self, model_name="vgg19") -> None:
@@ -59,14 +63,25 @@ class Image_Classification:
         model.compile(optimizer=self.model.compiler_params["optimizer"], loss=self.model.compiler_params["loss"], metrics=self.model.compiler_params["metrics"] )
 
         with tf.device('/device:gpu:0'):
-            model.fit( train_dataset.take(5), validation_data=validation_dataset.take(5), epochs=3, use_multiprocessing=True,
-                      callbacks=[ModelCheckpoint( os.path.join(model_save_path, "vgg19_{epoch:03d}-{val_loss:.4f}.h5" ),  save_weights_only = True) ] )
+            model.fit( train_dataset, validation_data=validation_dataset, epochs=20000, use_multiprocessing=True,
+                      callbacks=[ModelCheckpoint( os.path.join(model_save_path, "vgg19_{epoch:03d}-{val_loss:.4f}.h5" )) ] )
         
-    def infer(self):
-        pass
+        model.save( os.path.join(model_save_path, "vgg19_final.h5") )
+        
+    def infer(self, data_path, model_path):
+        logging.info(f"Loading model from: {model_path}")
+        model = load_model( model_path )
+
+        logging.debug("Reading images and preprocessing them")
+        images = np.array([ cv2.resize(cv2.imread(imagePath), ( self.IMAGE_SIZE, self.IMAGE_SIZE )) for imagePath in glob( os.path.join(data_path, "*.jpg") )])
+        logging.debug(f"Input shape: {images.shape}")
+        prediction = model.predict(images)
+        logging.debug( f"Prediction: {prediction}\n" )
+            
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     classifier = Image_Classification()
     classifier.train(r"C:\Users\prapt\Desktop\Deep Learning\Image_classification_Nature\data\inaturalist_12K", r"C:\Users\prapt\Desktop\Deep Learning\Image_classification_Nature\models")
+    classifier.infer(r"C:\Users\prapt\Desktop\Deep Learning\Image_classification_Nature\data\inaturalist_12K_inference_data", r"C:\Users\prapt\Desktop\Deep Learning\Image_classification_Nature\models\vgg19_final.h5")
