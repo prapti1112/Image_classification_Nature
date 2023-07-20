@@ -35,7 +35,7 @@ class VGG:
             
             return x
 
-    def build_model(self, input_size, num_classes):
+    def build_model(self, input_size, num_classes, drop_out_probability=0.5):
         """
             This function build the vgg-19 model using the function api
             @param[in]: input_size(int)
@@ -55,9 +55,9 @@ class VGG:
 
         x = Flatten()(x)
         x = Dense(4096, activation='relu')(x)
-        x = Dropout(0.5)(x)
+        x = Dropout(drop_out_probability)(x)
         x = Dense(4096, activation='relu')(x)
-        x = Dropout(0.5)(x)
+        x = Dropout(drop_out_probability)(x)
         x = Dense(num_classes, activation='softmax')(x)
         model = Model( inputs=input, outputs=x )
         
